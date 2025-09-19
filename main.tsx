@@ -5,6 +5,8 @@ import App from './src/App/App'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+import "modern-normalize";
+
 const queryClient = new QueryClient();
 
 
