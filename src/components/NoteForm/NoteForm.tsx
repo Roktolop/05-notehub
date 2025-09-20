@@ -1,4 +1,4 @@
-import type { CreateNoteProps } from '../services/noteService'
+import type { CreateNoteProps } from '../../services/noteService'
 import type { NoteTag } from '../../types/note'
 import css from './NoteForm.module.css'
 import { Formik, Form, ErrorMessage, Field, type FormikHelpers } from 'formik'
