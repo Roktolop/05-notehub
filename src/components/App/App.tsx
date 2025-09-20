@@ -16,7 +16,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("")
 
-  const { data, isLoading, isSuccess } = useQuery({
+  const { data, isSuccess } = useQuery({
     queryKey: ['notes', curPage, searchValue],
     queryFn: () => fetchNotes(searchValue, curPage),
     placeholderData: keepPreviousData
@@ -68,7 +68,7 @@ function App() {
             <NoteList notes={data?.notes ?? []} onDelete={handleDelete}
             />}
 
-          {isLoading && <button className={css.button} onClick={handleOpenModal}>Create note +</button>}
+          <button className={css.button} onClick={handleOpenModal}>Create note +</button>
 
           {isSuccess && data.notes.length > 0 &&
             <Pagination
