@@ -9,7 +9,7 @@ export interface FetchNotesResponse {
 }
 
 export interface CreateNoteProps {
-  title?: string,
+  title: string,
   content: string,
   tag: NoteTag,
 }
@@ -40,12 +40,13 @@ export async function fetchNotes(searchText: string, page: number): Promise<Fetc
   return response.data;
 };
 
-export async function createNote(data: CreateNoteProps): Promise<Note> { 
+export async function createNote(data: CreateNoteProps): Promise<Note> {
   const response = await api.post<Note>(`/notes`, data);
 
   return response.data;
 }
 
-export async function deleteNote({ id }: DeleteNoteProps){ 
-  await api.delete<DeleteNoteProps>(`/notes/${id}`)
+export async function deleteNote({ id }: DeleteNoteProps) {
+  const result = await api.delete<DeleteNoteProps>(`/notes/${id}`)
+  console.log(result)
 }
