@@ -1,9 +1,9 @@
-import type { Note } from '../types/note';
+import type { Note } from '../../types/note';
 import css from './NoteList.module.css';
 
 interface NoteListProps {
   notes: Note[];
-  onDelete: (id: string) => void; 
+  onDelete: (id: string) => void;
 }
 
 export default function NoteList({ notes = [], onDelete }: NoteListProps) {
