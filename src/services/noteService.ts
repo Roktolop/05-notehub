@@ -3,7 +3,7 @@ import axios from 'axios'
 
 const API_KEY = import.meta.env.VITE_NOTEHUB_TOKEN;
 
-export interface FetchNotesProps {
+export interface FetchNotesResponse {
   notes: Note[],
   totalPages: number,
 }
@@ -15,7 +15,7 @@ export interface CreateNoteProps {
 }
 
 export interface DeleteNoteProps {
-  id: number,
+  id: string,
 }
 
 export const api = axios.create({
@@ -26,17 +26,19 @@ export const api = axios.create({
   },
 });
 
-export async function fetchNotes(value: string): Promise<FetchNotesProps> {
-  const response = await api.get<FetchNotesProps>("/notes/", {
+export async function fetchNotes(searchText: string, page: number): Promise<FetchNotesResponse> {
+  const response = await api.get<FetchNotesResponse>("/notes", {
     params: {
-      search: value,
-      page: 1,
-      perpage: 10,
-    }
+      ...(searchText !== "" && { search: searchText }),
+      page,
+      perPage: 12,
+    },
   });
 
+  console.log(response.data);
+
   return response.data;
-}
+};
 
 export async function createNote(data: CreateNoteProps): Promise<Note> { 
   const response = await api.post<Note>(`/notes`, data);
@@ -44,6 +46,6 @@ export async function createNote(data: CreateNoteProps): Promise<Note> {
   return response.data;
 }
 
-export async function deleteNote({ id }: DeleteNoteProps): Promise<void> { 
-  await api.delete<void>(`/notes/${id}`)
+export async function deleteNote({ id }: DeleteNoteProps){ 
+  await api.delete<DeleteNoteProps>(`/notes/${id}`)
 }
