@@ -1,4 +1,4 @@
-import type { Note, NoteTag } from '../../types/note'
+import type { Note, NoteTag } from '../types/note'
 import axios from 'axios'
 
 const API_KEY = import.meta.env.VITE_NOTEHUB_TOKEN;

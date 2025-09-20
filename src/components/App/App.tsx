@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useState } from 'react'
 import Pagination from '../Pagination/Pagination'
 import css from './App.module.css'
-import { createNote, deleteNote, fetchNotes, type CreateNoteProps } from '../services/noteService'
+import { createNote, deleteNote, fetchNotes, type CreateNoteProps } from '../../services/noteService'
 import NoteList from '../NoteList/NoteList'
 import SearchBox from '../SearchBox/SearchBox'
 import { Modal } from '../Modal/Modal'
