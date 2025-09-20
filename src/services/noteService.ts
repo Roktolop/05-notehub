@@ -31,7 +31,7 @@ export async function fetchNotes(searchText: string, page: number): Promise<Fetc
     params: {
       ...(searchText !== "" && { search: searchText }),
       page,
-      perPage: 12,
+      perPage: 15,
     },
   });
 

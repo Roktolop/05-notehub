@@ -1,21 +1,24 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useState } from 'react'
-import ReactPaginate from 'react-paginate'
+import Pagination from '../Pagination/Pagination'
 import css from './App.module.css'
 import { createNote, deleteNote, fetchNotes, type CreateNoteProps } from '../services/noteService'
 import NoteList from '../NoteList/NoteList'
+import SearchBox from '../SearchBox/SearchBox'
 import { Modal } from '../Modal/Modal'
 import { NoteForm } from '../NoteForm/NoteForm'
+import { useDebouncedCallback } from 'use-debounce'
 
 function App() {
   const queryClient = useQueryClient();
 
   const [curPage, setCurPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("")
 
-  const { data, isSuccess } = useQuery({
-    queryKey: ['notes', curPage],
-    queryFn: () => fetchNotes('a', curPage),
+  const { data, isLoading, isSuccess } = useQuery({
+    queryKey: ['notes', curPage, searchValue],
+    queryFn: () => fetchNotes(searchValue, curPage),
     placeholderData: keepPreviousData
   })
 
@@ -51,29 +54,27 @@ function App() {
     setIsModalOpen(false);
   };
 
+  const handleSearch = useDebouncedCallback((query: string) => {
+    setSearchValue(query)
+  }, 500)
 
 
   return (
     <>
       <div className={css.app}>
         <header className={css.toolbar}>
+          <SearchBox onSearch={handleSearch}></SearchBox>
           {data && data.notes && data.notes.length > 1 &&
             <NoteList notes={data?.notes ?? []} onDelete={handleDelete}
             />}
 
-          <button className={css.button} onClick={handleOpenModal}>Create note +</button>
+          {isLoading && <button className={css.button} onClick={handleOpenModal}>Create note +</button>}
 
-          {isSuccess && data.notes.length > 1 &&
-            <ReactPaginate
-              pageCount={data?.totalPages}
-              pageRangeDisplayed={5}
-              marginPagesDisplayed={1}
-              onPageChange={({ selected }) => setCurPage(selected + 1)}
-              forcePage={curPage - 1}
-              containerClassName={css.pagination}
-              activeClassName={css.active}
-              nextLabel="→"
-              previousLabel="←"
+          {isSuccess && data.notes.length > 0 &&
+            <Pagination
+              pageCount={data?.totalPages ?? 0}
+              currentPage={curPage}
+              onPageChange={setCurPage}
             />}
 
           {isModalOpen && <Modal onClose={handleCloseModal}>

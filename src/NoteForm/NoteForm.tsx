@@ -1,12 +1,28 @@
 import type { CreateNoteProps } from '../services/noteService'
+import type { NoteTag } from '../types/note'
 import css from './NoteForm.module.css'
 import { Formik, Form, ErrorMessage, Field, type FormikHelpers } from 'formik'
+import * as Yup from "yup"
 
 interface NoteFormProps {
   onCancel: () => void,
   onSubmit: (data: CreateNoteProps) => void,
 }
 
+const tags: NoteTag[] = ['Work', 'Personal', 'Meeting', 'Shopping'];
+
+const CreateNoteScheme = Yup.object().shape({
+  title: Yup.string()
+    .min(3)
+    .max(50)
+    .required(),
+  content: Yup.string()
+    .max(500)
+    .required(),
+  tag: Yup.mixed<NoteTag>()
+    .oneOf(tags)
+    .required(),
+})
 
 export function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
   const handleCancel = () => {
@@ -25,6 +41,7 @@ export function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
       tag: 'Todo',
     }}
       onSubmit={handleSumbmit}
+      validationSchema={CreateNoteScheme}
     >
       <Form className={css.form}>
         <div className={css.formGroup}>
