@@ -1,4 +1,5 @@
-import type { CreateNoteProps } from '../../services/noteService'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createNote, type CreateNoteProps } from '../../services/noteService'
 import type { NoteTag } from '../../types/note'
 import css from './NoteForm.module.css'
 import { Formik, Form, ErrorMessage, Field, type FormikHelpers } from 'formik'
@@ -6,10 +7,9 @@ import * as Yup from "yup"
 
 interface NoteFormProps {
   onCancel: () => void,
-  onSubmit: (data: CreateNoteProps) => void,
 }
 
-const tags: NoteTag[] = ['Work', 'Personal', 'Meeting', 'Shopping'];
+const tags: NoteTag[] = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
 
 const CreateNoteScheme = Yup.object().shape({
   title: Yup.string()
@@ -17,21 +17,30 @@ const CreateNoteScheme = Yup.object().shape({
     .max(50)
     .required(),
   content: Yup.string()
-    .max(500)
-    .required(),
+    .max(500),
   tag: Yup.mixed<NoteTag>()
     .oneOf(tags)
     .required(),
 })
 
-export function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
-  const handleCancel = () => {
-    onCancel();
+export function NoteForm({ onCancel }: NoteFormProps) {
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: (data: CreateNoteProps) => createNote(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] })
+      onCancel();
+    }
+  })
+
+  const handleSumbmit = (data: CreateNoteProps, helpers: FormikHelpers<CreateNoteProps>) => {
+    createMutation.mutate(data);
+    helpers.resetForm();
   }
 
-  const handleSumbmit = (values: CreateNoteProps, helpers: FormikHelpers<CreateNoteProps>) => {
-    onSubmit(values);
-    helpers.resetForm();
+  const handleCancel = () => {
+    onCancel();
   }
 
   return (
@@ -53,6 +62,7 @@ export function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
         <div className={css.formGroup}>
           <label htmlFor="content">Content</label>
           <Field
+            as="textarea"
             id="content"
             name="content"
             rows={8}
