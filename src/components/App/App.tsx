@@ -46,20 +46,21 @@ function App() {
 
           <button className={css.button} onClick={handleOpenModal}>Create note +</button>
 
-          {isSuccess && data.notes.length > 1 &&
+          {isSuccess && data?.totalPages > 1 &&
             <Pagination
-              pageCount={data?.totalPages ?? 0}
+              totalPages={data?.totalPages ?? 0}
               currentPage={curPage}
               onPageChange={setCurPage}
             />}
 
-          {isModalOpen && <Modal onClose={handleCloseModal}>
-            <NoteForm onCancel={handleCloseModal} />
-          </Modal>}
+          {isModalOpen &&
+            <Modal onClose={handleCloseModal}>
+              <NoteForm onCancel={handleCloseModal} />
+            </Modal>}
         </header>
-        {data && data.notes && data.notes.length > 0 &&
-          <NoteList notes={data?.notes ?? []}
-          />}
+        {data?.notes && data.notes.length > 0 &&
+          <NoteList notes={data?.notes ?? []} />
+        }
       </div>
     </>
   )
