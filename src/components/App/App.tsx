@@ -7,16 +7,18 @@ import NoteList from '../NoteList/NoteList'
 import SearchBox from '../SearchBox/SearchBox'
 import { Modal } from '../Modal/Modal'
 import { NoteForm } from '../NoteForm/NoteForm'
-import { useDebouncedCallback } from 'use-debounce'
+import { useDebounce } from 'use-debounce'
 
 function App() {
   const [curPage, setCurPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("")
 
+  const [debouncedValue] = useDebounce(searchValue, 500);
+
   const { data, isSuccess } = useQuery({
-    queryKey: ['notes', curPage, searchValue],
-    queryFn: () => fetchNotes(searchValue, curPage),
+    queryKey: ['notes', curPage, debouncedValue],
+    queryFn: () => fetchNotes(debouncedValue, curPage),
     placeholderData: keepPreviousData
   })
 
@@ -28,10 +30,10 @@ function App() {
     setIsModalOpen(false);
   };
 
-  const handleSearch = useDebouncedCallback((query: string) => {
+  const handleSearch = (query: string) => {
     setSearchValue(query);
     setCurPage(1);
-  }, 500)
+  }
 
 
   return (
@@ -40,13 +42,11 @@ function App() {
         <header className={css.toolbar}>
           <SearchBox onSearch={handleSearch}></SearchBox>
 
-          {data && data.notes && data.notes.length > 0 &&
-            <NoteList notes={data?.notes ?? []}
-            />}
+
 
           <button className={css.button} onClick={handleOpenModal}>Create note +</button>
 
-          {isSuccess && data.notes.length > 0 &&
+          {isSuccess && data.notes.length > 1 &&
             <Pagination
               pageCount={data?.totalPages ?? 0}
               currentPage={curPage}
@@ -57,6 +57,9 @@ function App() {
             <NoteForm onCancel={handleCloseModal} />
           </Modal>}
         </header>
+        {data && data.notes && data.notes.length > 0 &&
+          <NoteList notes={data?.notes ?? []}
+          />}
       </div>
     </>
   )
